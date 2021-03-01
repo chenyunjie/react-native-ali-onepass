@@ -69,7 +69,10 @@ RCT_EXPORT_METHOD(onePass:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseReje
     if(![self checkInit:reject]){
         return;
     }
-    [tXCommonHandler getLoginTokenWithTimeout:0.0 controller:[UIApplication sharedApplication].keyWindow.rootViewController model:tXCustomModel complete:^(NSDictionary * _Nonnull resultDic) {
+
+    UIViewController *controller = [self topMostController];
+
+    [tXCommonHandler getLoginTokenWithTimeout:0.0 controller:controller model:tXCustomModel complete:^(NSDictionary * _Nonnull resultDic) {
         NSLog(@"resultDic = %@", resultDic);
         NSString *resultCode = [resultDic objectForKey:@"resultCode"];
         NSString *msg = [resultDic objectForKey:@"msg"];
@@ -93,6 +96,14 @@ RCT_EXPORT_METHOD(onePass:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseReje
         }
     }];
     resolve(@"");
+}
+
+-(UIViewController *) topMostController {
+  UIViewController*topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+  while(topController.presentedViewController){
+    topController = topController.presentedViewController;
+  }
+  return topController;
 }
 
 // 退出登录授权
